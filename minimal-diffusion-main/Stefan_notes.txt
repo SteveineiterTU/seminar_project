@@ -1,0 +1,9 @@
+Training:
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --epochs 500
+
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --epochs 100 --batch-size 128 --sampling-steps 100
+
+Sampling:
+CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py \
+  --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100 \
+  --num-sampled-images 50000 --pretrained-ckpt "PATPH_TO_PRETRAINED_MODEL"
