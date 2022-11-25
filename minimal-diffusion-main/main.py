@@ -396,12 +396,13 @@ def main():
 
     # distributed training
     ngpus = torch.cuda.device_count()
-    if ngpus > 1:
-        if args.local_rank == 0:
-            print(f"Using distributed training on {ngpus} gpus.")
-        args.batch_size = args.batch_size // ngpus
-        torch.distributed.init_process_group(backend="nccl", init_method="env://")
-        model = DDP(model, device_ids=[args.local_rank], output_device=args.local_rank)
+    # Deleted the check if more then 1 gpu so that init_process_group gets called, else there would be a bug with
+    #   dist.get_world_size() since init_process_group would not be called.
+    if args.local_rank == 0:
+        print(f"Using distributed training on {ngpus} gpus.")
+    args.batch_size = args.batch_size // ngpus
+    torch.distributed.init_process_group(backend="nccl", init_method="env://")
+    model = DDP(model, device_ids=[args.local_rank], output_device=args.local_rank)
 
     # sampling
     if args.sampling_only:

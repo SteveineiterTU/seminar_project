@@ -1,9 +1,13 @@
 Training:
   CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --epochs 500
-
   CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --epochs 100 --batch-size 128 --sampling-steps 100
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8101 main.py --arch UNet --dataset mnist --class-cond --epochs 100 --batch-size 128 --sampling-steps 100
+
+  with checkpoint (does not work lol) - need to do the training from beginning :(
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8101 main.py \
+  --pretrained-ckpt /home/stefan/Uni/Master/Semester_3/seminar_project/minimal-diffusion-main/trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True.pt \
+  --arch UNet --dataset mnist --class-cond --epochs 100 --batch-size 128 --sampling-steps 100
+
 
 Sampling:
-CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py \
-  --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100 \
-  --num-sampled-images 50000 --pretrained-ckpt "PATPH_TO_PRETRAINED_MODEL"
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt
