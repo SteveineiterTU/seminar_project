@@ -5,7 +5,6 @@ from helpers import linear_beta_schedule
 
 # ======================================== Consts ======================================================================
 TIME_STEPS = 250
-SAVE_AND_SAMPLE_MILESTONE = 1000
 
 # ======================================== Variables ===================================================================
 betas = linear_beta_schedule(time_steps=TIME_STEPS)
