@@ -10,4 +10,4 @@ Training:
 
 
 Sampling:
-  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt --save-dir ./sampled_images/
