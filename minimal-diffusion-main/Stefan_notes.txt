@@ -11,3 +11,9 @@ Training:
 
 Sampling:
   CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt --save-dir ./sampled_images/
+
+
+=================================== CelebA =============================================================================
+Training:
+  # Needed to reduce batchsize from 128 to 16, else CUDA out of memory.
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba --epochs 100 --batch-size 16 --sampling-steps 50  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples"

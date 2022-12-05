@@ -20,6 +20,9 @@ import unets
 unsqueeze3x = lambda x: x[..., None, None, None]
 
 
+SAVE_AFTER_EPOCHS = 10
+
+
 class GuassianDiffusion:
     """Gaussian diffusion process with 1) Cosine schedule for beta values (https://arxiv.org/abs/2102.09672)
     2) L_simple training objective from https://arxiv.org/abs/2006.11239.
@@ -396,7 +399,7 @@ def main():
 
     # distributed training
     ngpus = torch.cuda.device_count()
-    # Deleted the check if more then 1 gpu so that init_process_group gets called, else there would be a bug with
+    # Deleted the check if more than 1 gpu so that init_process_group gets called, else there would be a bug with
     #   dist.get_world_size() since init_process_group would not be called.
     if args.local_rank == 0:
         print(f"Using distributed training on {ngpus} gpus.")
@@ -474,19 +477,19 @@ def main():
                     ),
                     np.concatenate(sampled_images, axis=1)[:, :, ::-1],
                 )
-        if args.local_rank == 0:
+        if args.local_rank == 0 and epoch % SAVE_AFTER_EPOCHS == 0:
             torch.save(
                 model.state_dict(),
                 os.path.join(
                     args.save_dir,
-                    f"{args.arch}_{args.dataset}-epoch_{args.epochs}-timesteps_{args.diffusion_steps}-class_condn_{args.class_cond}.pt",
+                    f"{args.arch}_{args.dataset}-total_epochs_{args.epochs}-epoch_{epoch}-timesteps_{args.diffusion_steps}-class_condn_{args.class_cond}.pt",
                 ),
             )
             torch.save(
                 args.ema_dict,
                 os.path.join(
                     args.save_dir,
-                    f"{args.arch}_{args.dataset}-epoch_{args.epochs}-timesteps_{args.diffusion_steps}-class_condn_{args.class_cond}_ema_{args.ema_w}.pt",
+                    f"{args.arch}_{args.dataset}-total_epochs_{args.epochs}-epoch_{epoch}-timesteps_{args.diffusion_steps}-class_condn_{args.class_cond}_ema_{args.ema_w}.pt",
                 ),
             )
 
