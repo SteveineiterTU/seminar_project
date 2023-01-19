@@ -10,10 +10,20 @@ Training:
 
 
 Sampling:
-  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --class-cond --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt --save-dir ./sampled_images/
-
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --dataset mnist --sampling-only --sampling-steps 100  --num-sampled-images 50000 --pretrained-ckpt ./trained_models/UNet_mnist-epoch_100-timesteps_1000-class_condn_True_ema_0.9995.pt --save-dir ./sampled_images/
 
 =================================== CelebA =============================================================================
 Training:
   # Needed to reduce batchsize from 128 to 16, else CUDA out of memory.
-  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba --epochs 100 --batch-size 16 --sampling-steps 50  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples"
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba --epochs 100 --batch-size 16 --sampling-steps 50  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples" | tee training_output.txt
+
+  # Forgot to print out epoch 100 (since in range only reaches epoch 99) - using 11 epochs and training from checkpoint here
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba --epochs 11 --batch-size 16 --sampling-steps 50 \
+  --pretrained-ckpt "/home/stefan/Uni/Master/Semester_3/seminar_project/minimal-diffusion-main/trained_models/UNet_celeba-total_epochs_100-epoch_90-timesteps_1000-class_condn_False.pt" \
+  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples" | tee training_output.txt
+
+Sampling With DDIM:
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --ddim --dataset celeba --sampling-only --sampling-steps 5  --num-sampled-images 10 --pretrained-ckpt ./trained_models/UNet_celeba-total_epochs_100-epoch_100-timesteps_1000-class_condn_False_ema_0.9995.pt --save-dir ./sampled_images
+  CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 main.py --arch UNet --ddim --dataset celeba --sampling-only --sampling-steps 500  --num-sampled-images 100 --pretrained-ckpt ./trained_models/UNet_celeba-total_epochs_100-epoch_100-timesteps_1000-class_condn_False_ema_0.9995.pt --save-dir ./sampled_images
+
+

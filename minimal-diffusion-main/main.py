@@ -380,6 +380,7 @@ def main():
 
     # load pre-trained model
     if args.pretrained_ckpt:
+        print("STEFAN HERE")
         print(f"Loading pretrained model from {args.pretrained_ckpt}")
         d = fix_legacy_dict(torch.load(args.pretrained_ckpt, map_location=args.device))
         dm = model.state_dict()
@@ -469,11 +470,11 @@ def main():
                 metadata.num_classes,
                 args,
             )
-            if args.local_rank == 0:
+            if args.local_rank == 0 and epoch % SAVE_AFTER_EPOCHS == 0:
                 cv2.imwrite(
                     os.path.join(
                         args.save_dir,
-                        f"{args.arch}_{args.dataset}-{args.diffusion_steps}_steps-{args.sampling_steps}-sampling_steps-class_condn_{args.class_cond}.png",
+                        f"{args.arch}_{args.dataset}-epoch_{epoch}-{args.diffusion_steps}_steps-{args.sampling_steps}-sampling_steps-class_condn_{args.class_cond}.png",
                     ),
                     np.concatenate(sampled_images, axis=1)[:, :, ::-1],
                 )

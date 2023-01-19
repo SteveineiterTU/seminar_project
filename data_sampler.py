@@ -3,6 +3,7 @@ import random
 import shutil
 
 SHOULD_FILES_BE_MOVED = False
+SHOULD_FILES_BE_COPIED = False
 SOURCE_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_minus_50K_images"
 DESTINATION_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples"
 files_list = []
@@ -22,4 +23,12 @@ if SHOULD_FILES_BE_MOVED:
         os.makedirs(DESTINATION_DIRECTORY)
 
     for file in files_to_move:
-        shutil.move(file, DESTINATION_DIRECTORY)
+        shutil.move(file, DESTINATION_DIRECTORY) 
+        
+       
+if SHOULD_FILES_BE_COPIED:
+    if not os.path.isdir(DESTINATION_DIRECTORY):
+        os.makedirs(DESTINATION_DIRECTORY)
+
+    for file in files_to_move:
+        shutil.copy(file, DESTINATION_DIRECTORY) 

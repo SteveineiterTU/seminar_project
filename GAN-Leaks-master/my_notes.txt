@@ -1,0 +1,37 @@
+GANS:
+To sample from pretrained VAEGAN:
+    cd gan_models/vaegan
+    python sample.py --model_dir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/gan_model_checkpoints/vaegan_identity0_20k/identity0_20k"
+
+To train the fbb attack:
+    cd attack_models
+    python fbb.py \
+    -name "output" \
+    -posdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_20K_samples_for_vaegan" \
+    -negdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples" \
+    -gdir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/gan_model_checkpoints/vaegan_identity0_20k/identity0_20k"
+
+To train the pbb vaegan:
+    cd attack_models
+    python pbb_vaegan.py \
+    -name "output" \
+    -posdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_20K_samples_for_vaegan" \
+    -negdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples" \
+    -gdir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/gan_model_checkpoints/vaegan_identity0_20k/identity0_20k" \
+    -init random
+
+To compute the AUCROC and plot it:
+    cd attack_models/tools
+    python eval_roc.py --attack_type "pbb" \
+    -ldir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/attack_models/results/pbb/output"
+
+
+========================================================================================================================
+Diffusion:
+    cd diffusion_attack
+    python pbb_ddim_diffusion.py \
+    -name "output" \
+    -posdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_50K_samples" \
+    -negdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_minus_50K_images" \
+    -gdir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/diffusion_attack/models/epochs_100" \
+    -init random
