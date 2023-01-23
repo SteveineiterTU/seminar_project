@@ -365,6 +365,13 @@ def main():
         print(args)
 
     # Creat model and diffusion process
+    # TODO delete me
+    print(f"STEFAN HERE:")
+    print(unets.__dict__[args.arch])
+    print(args.arch)
+    print(args.device)
+    print(args.delete_keys)
+    # ===============================
     model = unets.__dict__[args.arch](
         image_size=metadata.image_size,
         in_channels=metadata.num_channels,
@@ -380,7 +387,6 @@ def main():
 
     # load pre-trained model
     if args.pretrained_ckpt:
-        print("STEFAN HERE")
         print(f"Loading pretrained model from {args.pretrained_ckpt}")
         d = fix_legacy_dict(torch.load(args.pretrained_ckpt, map_location=args.device))
         dm = model.state_dict()
