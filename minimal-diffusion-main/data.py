@@ -69,6 +69,16 @@ def get_metadata(name):
                 "num_channels": 3,
             }
         )
+    elif name == "celeba_reduced":
+        metadata = EasyDict(
+            {
+                "image_size": 32,
+                "num_classes": 4,
+                "train_images": 109036,
+                "val_images": 12376,
+                "num_channels": 1,
+            }
+        )
     elif name == "cars":
         metadata = EasyDict(
             {
@@ -200,6 +210,21 @@ def get_dataset(name, data_dir, metadata):
             [
                 transforms.Resize(64),
                 transforms.CenterCrop(64),
+                transforms.RandomHorizontalFlip(),
+                transforms.ToTensor(),
+            ]
+        )
+        train_set = datasets.ImageFolder(
+            data_dir,
+            transform=transform_train,
+        )
+    elif name == "celeba_reduced":
+        # celebA has a large number of images, avoiding randomcropping.
+        transform_train = transforms.Compose(
+            [
+                transforms.Grayscale(),
+                transforms.Resize(32),
+                transforms.CenterCrop(32),
                 transforms.RandomHorizontalFlip(),
                 transforms.ToTensor(),
             ]

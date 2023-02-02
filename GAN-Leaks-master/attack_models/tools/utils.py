@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+USE_32x32_GRAYSCALE = True
 NCOLS = 5
 
 
@@ -88,7 +89,7 @@ def read_image(filepath, resolution=64, cx=89, cy=121):
     img = np.asarray(PIL.Image.open(filepath))
     shape = img.shape
 
-    if shape == (resolution, resolution, 3):
+    if shape == (resolution, resolution, 1):
         pass
     else:
         img = img[cy - 64: cy + 64, cx - 64: cx + 64]
@@ -130,7 +131,10 @@ def visualize_gt(imgs, save_dir):
     NROWS = int(np.ceil(float(num_imgs) / float(NCOLS)))
     for i in range(num_imgs):
         plt.subplot(NROWS, NCOLS, i + 1)
-        plt.imshow(imgs[i])
+        if USE_32x32_GRAYSCALE:
+            plt.imshow(np.squeeze(imgs[i]))
+        else:
+            plt.imshow(imgs[i])
         plt.axis('off')
     plt.savefig(os.path.join(save_dir, 'input.png'))
     plt.close()

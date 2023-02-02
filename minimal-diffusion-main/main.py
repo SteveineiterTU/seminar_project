@@ -366,11 +366,11 @@ def main():
 
     # Creat model and diffusion process
     # TODO delete me
-    print(f"STEFAN HERE:")
-    print(unets.__dict__[args.arch])
-    print(args.arch)
-    print(args.device)
-    print(args.delete_keys)
+    print(f"DEBUG: "
+          f"unets.__dict__[args.arch]: {unets.__dict__[args.arch]} | "
+          f"args.arch: {args.arch} | args.device: {args.device} | "
+          f"args.delete_keys: {args.delete_keys} | "
+          f"dimension: {metadata.image_size * metadata.image_size * metadata.num_channels}")
     # ===============================
     model = unets.__dict__[args.arch](
         image_size=metadata.image_size,
@@ -440,6 +440,7 @@ def main():
 
     # Load dataset
     train_set = get_dataset(args.dataset, args.data_dir, metadata)
+    print(f"DEBUG: shape is: {train_set[0][0].shape}")
     sampler = DistributedSampler(train_set) if ngpus > 1 else None
     train_loader = DataLoader(
         train_set,

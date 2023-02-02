@@ -35,3 +35,8 @@ Diffusion:
     -negdir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/img_align_celeba_minus_50K_images" \
     -gdir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/diffusion_attack/models/epochs_100" \
     -init random
+
+To compute the AUCROC and plot it:
+    cd attack_models/tools
+    python eval_roc.py --attack_type "pbb" \
+    -ldir "/home/stefan/Uni/Master/Semester_3/seminar_project/GAN-Leaks-master/diffusion_attack/results/pbb/output"

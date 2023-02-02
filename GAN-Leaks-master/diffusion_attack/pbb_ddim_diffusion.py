@@ -9,6 +9,8 @@ from easydict import EasyDict
 from tqdm import tqdm
 from gan_models.vaegan import train
 from collections import OrderedDict
+from torchvision import datasets, transforms
+from PIL import Image
 
 import unets
 from diffusion import GuassianDiffusion
@@ -127,7 +129,8 @@ def parse_arguments():
         default=10,
         help="the maximum number of function calls (for scipy optimizer)",
     )
-    # Arguments for diffusion
+
+    # ================================= Arguments for diffusion =================================
     parser.add_argument("--device", "-device", type=str, default="cuda:0")
     parser.add_argument(
         "--sampling_steps",
@@ -141,9 +144,8 @@ def parse_arguments():
         "--diffusion_steps",
         "-diffusion_steps",
         type=int,
-        default=10,
-        help="The diffusion steps used in the training of the diffusion model. Should have "
-             "no impact since we are using the sampling_steps above in the actual function.",
+        default=1000,
+        help="The diffusion steps used in the training of the diffusion model.",
     )
 
     return parser.parse_args()
@@ -173,7 +175,6 @@ def check_args(args):
 
     return args, save_dir, args.gan_model_dir
 
-
 #############################################################################################################
 # main optimization function
 #############################################################################################################
@@ -201,8 +202,8 @@ class Loss(torch.nn.Module):
         ### loss
         if distance == "l2":
             print("Use distance: l2")
-            self.loss_l2_fn = lambda x, y: torch.mean((y - x) ** 2, dim=[1, 2, 3])
             self.loss_lpips_fn = lambda x, y: 0.0
+            self.loss_l2_fn = lambda x, y: torch.mean((y - x) ** 2, dim=[1, 2, 3])
 
         elif distance == "l2-lpips":
             print("Use distance: lpips + l2")
@@ -281,7 +282,7 @@ def optimize_z_bb(loss_model, init_val, query_imgs, save_dir, max_func):
                 x_hat_curr = loss_model.x_hat.data.cpu().numpy()
                 x_hat_curr = np.transpose(x_hat_curr, [0, 2, 3, 1])
 
-                loss_lpips = loss_model.loss_lpips.data.cpu().numpy()
+                loss_lpips = loss_model.loss_lpips.data.cpu().numpy() if DISTANCE == "l2-lpips" else 0
                 loss_l2 = loss_model.loss_l2.data.cpu().numpy()
                 save_files(save_dir_batch, ["l2", "lpips"], [loss_l2, loss_lpips])
 
@@ -325,19 +326,23 @@ def main():
     global IMAGE_METADATA
     global SAMPLING_STEPS
     global DIFFUSION
+    global USE_32x32_GRAYSCALE
+    global DISTANCE
     BATCH_SIZE = args.batch_size
     DEVICE = args.device
     IMAGE_METADATA = EasyDict(
         {
-            "image_size": 64,
+            "image_size": 32,
             "num_classes": 4,
             "train_images": 109036,
             "val_images": 12376,
-            "num_channels": 3,
+            "num_channels": 1,
         }
     )
     SAMPLING_STEPS = args.sampling_steps
     DIFFUSION = GuassianDiffusion(args.diffusion_steps, args.device)
+    USE_32x32_GRAYSCALE = True
+    DISTANCE = args.distance
 
     # Set up Model
     # --------------- Create Model --------------
@@ -395,6 +400,18 @@ def main():
                      : args.data_num
                      ]
     pos_query_imgs = np.array([read_image(f, resolution) for f in pos_data_paths])
+    if USE_32x32_GRAYSCALE:
+        pos_query_imgs = [Image.open(f) for f in pos_data_paths]
+        transform_train = transforms.Compose(
+            [
+                transforms.Grayscale(),
+                transforms.Resize(32),
+                transforms.CenterCrop(32),
+                transforms.ToTensor(),
+            ]
+        )
+        pos_query_imgs = np.array([transform_train(f).permute(2, 1, 0).numpy() for f in pos_query_imgs])
+
     query_loss, query_z, query_xhat = optimize_z_bb(
         loss_model,
         init_val_pos,
@@ -409,6 +426,18 @@ def main():
                      : args.data_num
                      ]
     neg_query_imgs = np.array([read_image(f, resolution) for f in neg_data_paths])
+    if USE_32x32_GRAYSCALE:
+        neg_query_imgs = [Image.open(f) for f in neg_data_paths]
+        transform_train = transforms.Compose(
+            [
+                transforms.Grayscale(),
+                transforms.Resize(32),
+                transforms.CenterCrop(32),
+                transforms.ToTensor(),
+            ]
+        )
+        neg_query_imgs = np.array([transform_train(f).permute(2, 1, 0).numpy() for f in neg_query_imgs])
+
     query_loss, query_z, query_xhat = optimize_z_bb(
         loss_model,
         init_val_neg,

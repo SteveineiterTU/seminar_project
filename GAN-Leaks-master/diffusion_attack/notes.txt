@@ -1,0 +1,16 @@
+VAEGAN hat 25 minuten gebraucht (mit zdim=100) => wir brauchen jetzt theoretisch 25x2x(12288/100) mins (=102,4H)
+    brauchen (2x weil BigO von bowells gradient sollt ja 2N sein). Vill aber laenger weil ja diffusion process laenger
+    dauert als sampling vom generator.
+
+Gestartet so um 20:00 - 1. iteratrion sollte also am 24.1.2023 um 17:00 fertig sein. Wenn nid spaetestens am tag drauf
+    um 8:00 abrechen tho.
+
+Heute (25.1.2023, 8:00) noch immer keine iteration fertig also nach 32h => z reducen, datasize reducen.
+
+Ebenfalls denk ich mir das die AUCROC schlecht ausfallen wird, da sie bereits beim GAN mit 20K samples nur 0.444 betrug
+    und des ap 0.533.
+
+
+DDIM mit 64 images und 32x32x1 dauer:  20%|██        | 1/5 [3:48:20<15:13:22, 13700.65s/it] (2x weil pos und neg)
+  positiv: 100%|██████████| 5/5 [13:43:52<00:00, 9886.42s/it]
+  negative: 100%|██████████| 5/5 [15:03:03<00:00, 10836.66s/it]
