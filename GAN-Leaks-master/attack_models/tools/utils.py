@@ -132,7 +132,7 @@ def visualize_gt(imgs, save_dir):
     for i in range(num_imgs):
         plt.subplot(NROWS, NCOLS, i + 1)
         if USE_32x32_GRAYSCALE:
-            plt.imshow(np.squeeze(imgs[i]))
+            plt.imshow(np.squeeze(imgs[i]), cmap='gray')
         else:
             plt.imshow(imgs[i])
         plt.axis('off')
@@ -155,7 +155,10 @@ def visualize_progress(imgs, loss, save_dir, counter):
     NROWS = int(np.ceil(float(num_imgs) / float(NCOLS)))
     for i in range(num_imgs):
         plt.subplot(NROWS, NCOLS, i + 1)
-        plt.imshow(imgs[i])
+        if USE_32x32_GRAYSCALE:
+            plt.imshow(imgs[i], cmap='gray')
+        else:
+            plt.imshow(imgs[i])
         plt.title('loss: %.4f' % loss[i], fontdict={'fontsize': 8, 'color': 'blue'})
         plt.axis('off')
     plt.savefig(os.path.join(save_dir, 'output_%d.png' % counter))
@@ -166,7 +169,10 @@ def visualize_samples(img_r01, save_dir):
     plt.figure(figsize=(20, 20))
     for i in range(64):
         plt.subplot(8, 8, i + 1)
-        plt.imshow(img_r01[i])
+        if USE_32x32_GRAYSCALE:
+            plt.imshow(img_r01[i], cmap='gray')
+        else:
+            plt.imshow(img_r01[i])
         plt.axis('off')
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, 'samples.png'))

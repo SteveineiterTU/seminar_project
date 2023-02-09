@@ -1,37 +1,21 @@
 import numpy as np
 import torch
-import torch.nn as nn
 import os
-import sys
 import pickle
 import argparse
 from easydict import EasyDict
 from tqdm import tqdm
-from gan_models.vaegan import train
-from collections import OrderedDict
-from torchvision import datasets, transforms
+from torchvision import transforms
 from PIL import Image
 
 import unets
 from diffusion import GuassianDiffusion
-from helpers import fix_legacy_dict
+from helpers import fix_legacy_dict, check_folder, visualize_gt, visualize_progress, save_files, \
+    get_filepaths_from_dir, read_image
 
-# Trick to solve attribute error
-import __main__
-
-setattr(__main__, "Generator", train.Generator)
-
-### import tools
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "tools"))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "tools/lpips_pytorch"))
-import attack_models.tools.lpips_pytorch as ps
-from attack_models.tools.utils import *
 from scipy.optimize import minimize
 
-### import victim models
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../gan_models/vaegan"))
-
-### Hyperparameters
+# Hyperparameters
 LAMBDA2 = 0.2
 LAMBDA3 = 0.001
 RANDOM_SEED = 1000
@@ -195,12 +179,12 @@ class Loss(torch.nn.Module):
     def __init__(self, model, distance, if_norm_reg=False, z_dim=100):
         super(Loss, self).__init__()
         self.distance = distance
-        self.lpips_model = ps.PerceptualLoss()
+        self.lpips_model = None  # Need to create a model if we want to use it.
         self.model = model
         self.if_norm_reg = if_norm_reg
         self.z_dim = z_dim
 
-        ### loss
+        # loss
         if distance == "l2":
             print("Use distance: l2")
             self.loss_lpips_fn = lambda x, y: 0.0

@@ -2,11 +2,11 @@ import os
 import random
 import shutil
 
-SAMPLE_COUNT = 64
+SAMPLE_COUNT = 256 - 64
 SHOULD_FILES_BE_MOVED = True
 SHOULD_FILES_BE_COPIED = False
-SOURCE_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/64_images/img_align_celeba_minus_64_images"
-DESTINATION_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/64_images/img_align_celeba_64_samples"
+SOURCE_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/256_images/img_align_celeba_minus_256_images"
+DESTINATION_DIRECTORY = "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/256_images/img_align_celeba_256_samples"
 files_list = []
 
 for root, dirs, files in os.walk(SOURCE_DIRECTORY):
