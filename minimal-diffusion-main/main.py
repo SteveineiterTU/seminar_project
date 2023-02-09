@@ -365,13 +365,6 @@ def main():
         print(args)
 
     # Creat model and diffusion process
-    # TODO delete me
-    print(f"DEBUG: "
-          f"unets.__dict__[args.arch]: {unets.__dict__[args.arch]} | "
-          f"args.arch: {args.arch} | args.device: {args.device} | "
-          f"args.delete_keys: {args.delete_keys} | "
-          f"dimension: {metadata.image_size * metadata.image_size * metadata.num_channels}")
-    # ===============================
     model = unets.__dict__[args.arch](
         image_size=metadata.image_size,
         in_channels=metadata.num_channels,
