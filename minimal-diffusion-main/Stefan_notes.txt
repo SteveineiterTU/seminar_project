@@ -30,6 +30,5 @@ Sampling With DDIM:
 Training with reduced images:
   64 images:
     CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba_reduced --epochs 101 --batch-size 16 --sampling-steps 50  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/64_images/img_align_celeba_64_samples" | tee training_output.txt
-  128 images:
-    TODO
-
+  256 images:
+    CUDA_VISIBLE_DEVICES=0 python -m torch.distributed.launch --nproc_per_node=1 --master_port 8107 main.py --arch UNet --dataset celeba_reduced --epochs 101 --batch-size 16 --sampling-steps 50  --data-dir "/home/stefan/Uni/Master/Semester_3/seminar_project/CelebA/Img/256_images/img_align_celeba_256_samples"
