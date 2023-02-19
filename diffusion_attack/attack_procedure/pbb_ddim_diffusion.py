@@ -10,8 +10,15 @@ from PIL import Image
 
 import unets
 from diffusion import GuassianDiffusion
-from helpers import fix_legacy_dict, check_folder, visualize_gt, visualize_progress, save_files, \
-    get_filepaths_from_dir, read_image
+from helpers import (
+    fix_legacy_dict,
+    check_folder,
+    visualize_gt,
+    visualize_progress,
+    save_files,
+    get_filepaths_from_dir,
+    read_image,
+)
 
 from scipy.optimize import minimize
 
@@ -122,7 +129,7 @@ def parse_arguments():
         type=int,
         default=10,
         help="The sampling steps used in the reverse process. "
-             "Since we are using DDIM we can use less steps",
+        "Since we are using DDIM we can use less steps",
     )
     parser.add_argument(
         "--diffusion_steps",
@@ -205,7 +212,7 @@ class Loss(torch.nn.Module):
 
         if self.if_norm_reg:
             z_ = z.view(-1, self.z_dim)
-            norm = torch.sum(z_ ** 2, dim=1)
+            norm = torch.sum(z_**2, dim=1)
             norm_penalty = (norm - self.z_dim) ** 2
             self.vec_loss += LAMBDA3 * norm_penalty
 
@@ -218,8 +225,8 @@ class Loss(torch.nn.Module):
                 torch.randn(
                     BATCH_SIZE, IMAGE_METADATA.num_channels, image_size, image_size
                 )
-                    .float()
-                    .to(DEVICE)
+                .float()
+                .to(DEVICE)
             )
         gen_image = DIFFUSION.sample_from_reverse_process(
             model, xT, SAMPLING_STEPS, {"y": None}, ddim=True
@@ -240,7 +247,7 @@ def optimize_z_bb(loss_model, init_val, query_imgs, save_dir, max_func):
         save_dir_batch = os.path.join(save_dir, str(i))
 
         try:
-            x_batch = query_imgs[i * BATCH_SIZE: (i + 1) * BATCH_SIZE]
+            x_batch = query_imgs[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
             x_gt = torch.from_numpy(x_batch).permute(0, 3, 1, 2).cuda()
 
             if os.path.exists(save_dir_batch):
@@ -259,7 +266,7 @@ def optimize_z_bb(loss_model, init_val, query_imgs, save_dir, max_func):
                     final_loss = torch.mean(vec_loss)
                     return final_loss.detach().cpu().numpy()
 
-                z0 = init_val[i * BATCH_SIZE: (i + 1) * BATCH_SIZE]
+                z0 = init_val[i * BATCH_SIZE : (i + 1) * BATCH_SIZE]
                 options = {"maxiter": max_func, "disp": 1}
                 res = minimize(objective, z0, method="Powell", options=options)
                 z_curr = res.x
@@ -267,7 +274,11 @@ def optimize_z_bb(loss_model, init_val, query_imgs, save_dir, max_func):
                 x_hat_curr = loss_model.x_hat.data.cpu().numpy()
                 x_hat_curr = np.transpose(x_hat_curr, [0, 2, 3, 1])
 
-                loss_lpips = loss_model.loss_lpips.data.cpu().numpy() if DISTANCE == "l2-lpips" else 0
+                loss_lpips = (
+                    loss_model.loss_lpips.data.cpu().numpy()
+                    if DISTANCE == "l2-lpips"
+                    else 0
+                )
                 loss_l2 = loss_model.loss_l2.data.cpu().numpy()
                 save_files(save_dir_batch, ["l2", "lpips"], [loss_l2, loss_lpips])
 
@@ -351,7 +362,7 @@ def main():
     print(f"Loaded pretrained model from {pretrained_ckpt}")
     # -------------------------------------------
 
-    Z_DIM = model.in_channels * (model.image_size ** 2)
+    Z_DIM = model.in_channels * (model.image_size**2)
     resolution = args.resolution
 
     # Define loss
@@ -382,8 +393,8 @@ def main():
 
     # Positive
     pos_data_paths = get_filepaths_from_dir(args.pos_data_dir, ext="jpg")[
-                     : args.data_num
-                     ]
+        : args.data_num
+    ]
     pos_query_imgs = np.array([read_image(f, resolution) for f in pos_data_paths])
     if USE_32x32_GRAYSCALE:
         pos_query_imgs = [Image.open(f) for f in pos_data_paths]
@@ -395,7 +406,9 @@ def main():
                 transforms.ToTensor(),
             ]
         )
-        pos_query_imgs = np.array([transform_train(f).permute(2, 1, 0).numpy() for f in pos_query_imgs])
+        pos_query_imgs = np.array(
+            [transform_train(f).permute(2, 1, 0).numpy() for f in pos_query_imgs]
+        )
 
     query_loss, query_z, query_xhat = optimize_z_bb(
         loss_model,
@@ -408,8 +421,8 @@ def main():
 
     # Negative
     neg_data_paths = get_filepaths_from_dir(args.neg_data_dir, ext="jpg")[
-                     : args.data_num
-                     ]
+        : args.data_num
+    ]
     neg_query_imgs = np.array([read_image(f, resolution) for f in neg_data_paths])
     if USE_32x32_GRAYSCALE:
         neg_query_imgs = [Image.open(f) for f in neg_data_paths]
@@ -421,7 +434,9 @@ def main():
                 transforms.ToTensor(),
             ]
         )
-        neg_query_imgs = np.array([transform_train(f).permute(2, 1, 0).numpy() for f in neg_query_imgs])
+        neg_query_imgs = np.array(
+            [transform_train(f).permute(2, 1, 0).numpy() for f in neg_query_imgs]
+        )
 
     query_loss, query_z, query_xhat = optimize_z_bb(
         loss_model,
