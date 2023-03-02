@@ -7,7 +7,7 @@ python wb_ddim_diffusion.py \
 -negdir "../data/64_images/img_align_celeba_minus_64_images" \
 -gdir "../models/training_set_size_64/UNet_celeba_reduced-total_epochs_101-epoch_100-timesteps_1000-class_condn_False.pt" \
 -init random \
---distance l2 \
+--distance l2-lpips \
 --data_num 16 \
 --exp_name "wb_64_images_model"
 

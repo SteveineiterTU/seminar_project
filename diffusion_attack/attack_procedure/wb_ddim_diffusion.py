@@ -22,6 +22,7 @@ from helpers import (
     read_image,
 )
 
+import lpips_pytorch as lpips
 from scipy.optimize import minimize
 
 # Hyperparameters
@@ -189,7 +190,7 @@ class Loss(torch.nn.Module):
     def __init__(self, model, distance, if_norm_reg=False, z_dim=100):
         super(Loss, self).__init__()
         self.distance = distance
-        self.lpips_model = None  # Need to create a model if we want to use it.
+        self.lpips_model = lpips.PerceptualLoss()
         self.model = model
         self.if_norm_reg = if_norm_reg
         self.z_dim = z_dim
@@ -203,7 +204,7 @@ class Loss(torch.nn.Module):
         elif distance == "l2-lpips":
             print("Use distance: lpips + l2")
             self.loss_lpips_fn = lambda x, y: self.lpips_model.forward(
-                x, y, normalize=False
+                x, y, normalize=False, grayscale=True
             ).view(-1)
             self.loss_l2_fn = lambda x, y: torch.mean((y - x) ** 2, dim=[1, 2, 3])
 

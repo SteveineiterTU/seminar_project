@@ -200,7 +200,7 @@ class Loss(torch.nn.Module):
         elif distance == "l2-lpips":
             print("Use distance: lpips + l2")
             self.loss_lpips_fn = lambda x, y: self.lpips_model.forward(
-                x, y, normalize=False
+                x, y, normalize=False, grayscale=True
             ).view(-1)
             self.loss_l2_fn = lambda x, y: torch.mean((y - x) ** 2, dim=[1, 2, 3])
 
