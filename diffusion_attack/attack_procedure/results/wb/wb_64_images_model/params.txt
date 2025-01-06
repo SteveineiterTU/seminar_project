@@ -1,0 +1,15 @@
+exp_name:wb_64_images_model
+gan_model_dir:../models/training_set_size_64/UNet_celeba_reduced-total_epochs_101-epoch_100-timesteps_1000-class_condn_False.pt
+pos_data_dir:../data/64_images/img_align_celeba_64_samples/class0
+neg_data_dir:../data/64_images/img_align_celeba_minus_64_images
+data_num:16
+batch_size:1
+resolution:64
+initialize_type:random
+nn_dir:None
+distance:l2-lpips
+if_norm_reg:True
+maxfunc:10
+device:cuda:0
+sampling_steps:10
+diffusion_steps:1000

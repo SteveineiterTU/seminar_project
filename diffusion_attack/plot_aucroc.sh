@@ -2,5 +2,5 @@
 
 cd attack_procedure
 python eval_roc.py \
---attack_type "pbb" \
--ldir "results/pbb/256_images_model"
+--attack_type "wb" \
+-ldir "results/wb/wb_64_images_model_l2_test"
